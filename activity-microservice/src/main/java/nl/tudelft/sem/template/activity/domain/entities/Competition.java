@@ -3,6 +3,9 @@ package nl.tudelft.sem.template.activity.domain.entities;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.activity.domain.GenderConstraint;
 import nl.tudelft.sem.template.activity.domain.NetId;
@@ -14,6 +17,7 @@ public class Competition extends Activity {
     @Column
     private boolean allowAmateurs;
     @Column
+    @Enumerated(EnumType.STRING)
     private GenderConstraint genderConstraint;
     @Column
     private boolean singleOrganization;

@@ -236,7 +236,7 @@ public class CompetitionService extends ActivityService {
     public List<Competition> getSuitableCompetition(Position position) {
         UserDataRequestModel userDataRequestModel = userRestService.getUserData();
         List<Competition> competitionsAreMetConstraints = competitionRepository
-                .findSuitableCompetitions(userDataRequestModel.getGender(),
+                .findSuitableCompetitions("%" + userDataRequestModel.getGender().toString(),
                         userDataRequestModel.getOrganization(),
                         userDataRequestModel.isAmateur());
         return boatRestService.checkIfPositionAvailable(competitionsAreMetConstraints, position);

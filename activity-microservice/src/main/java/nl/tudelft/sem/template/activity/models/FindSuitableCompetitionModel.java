@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class FindSuitableCompetitionModel {
-    List<Competition> competitions;
+    List<Long> boatIds;
     Position position;
 }

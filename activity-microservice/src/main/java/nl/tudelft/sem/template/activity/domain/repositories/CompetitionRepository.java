@@ -31,6 +31,7 @@ public interface CompetitionRepository extends JpaRepository<Competition, NetId>
     Competition findCompetitionByAttendeesContains(NetId netId);
 
     @Query(value = "SELECT * FROM COMPETITION c WHERE c.allowAmateurs = ?3 "
-            + "AND c.genderConstraint = ?1 AND c.organization = ?2", nativeQuery = true)
-    List<Competition> findSuitableCompetitions(Gender gender, String organization, boolean isAmateur);
+            + "AND c.genderConstraint = ?1 AND c.genderConstraint = 'NO_CONSTRAINT' AND organization = ?2",
+        nativeQuery = true)
+    List<Competition> findSuitableCompetitions(String gender, String organization, boolean isAmateur);
 }

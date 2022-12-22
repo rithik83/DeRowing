@@ -13,11 +13,7 @@ import nl.tudelft.sem.template.activity.models.JoinRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
@@ -149,7 +145,7 @@ public class CompetitionController {
      * @throws Exception Activity not found exception
      */
     @GetMapping("/find")
-    public ResponseEntity<List<Competition>> getCompetitions(@RequestBody Position position) throws Exception {
+    public ResponseEntity<List<Competition>> getCompetitions(@RequestParam Position position) throws Exception {
         try {
             List<Competition> result = competitionService.getSuitableCompetition(position);
             return ResponseEntity.ok(result);

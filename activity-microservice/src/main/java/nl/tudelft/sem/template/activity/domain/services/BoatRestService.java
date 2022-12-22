@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BoatRestService extends RestService {
@@ -86,12 +87,12 @@ public class BoatRestService extends RestService {
     public List<Competition> checkIfPositionAvailable(List<Competition> competitions, Position position) {
         String url = environment.getProperty(boatUrl);
         int port = Integer.parseInt(environment.getProperty(boatPort));
-        FindSuitableCompetitionModel model = new FindSuitableCompetitionModel(competitions, position);
+        List<Long> boatIds = competitions.stream().map(x -> x.getBoatId()).collect(Collectors.toList());
+        FindSuitableCompetitionModel model = new FindSuitableCompetitionModel(boatIds, position);
         try {
-            FindSuitableCompetitionResponseModel response =
-                    (FindSuitableCompetitionResponseModel)
-                            performRequest(model, url, port, "/boat/check", HttpMethod.POST);
-            return response.getCompetitions();
+            Object response = performRequest(model, url, port, "/boat/check", HttpMethod.POST);
+            return (response != null) ? ((FindSuitableCompetitionResponseModel) deserialize(response,
+                        FindSuitableCompetitionResponseModel.class)).getCompetitions(): null;
         } catch (UnsuccessfulRequestException e) {
             System.out.println("There is no such competition that you are suitable for");
             return new ArrayList<>();
