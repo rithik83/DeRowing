@@ -17,6 +17,8 @@ import nl.tudelft.sem.template.activity.models.TrainingEditModel;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TrainingService extends ActivityService {
 
@@ -188,5 +190,9 @@ public class TrainingService extends ActivityService {
         } catch (Exception e) {
             throw new Exception("Something went wrong in editing training");
         }
+    }
+
+    public List<Training> getSuitableTraining(Position position) {
+        return trainingRepository.findAll();
     }
 }

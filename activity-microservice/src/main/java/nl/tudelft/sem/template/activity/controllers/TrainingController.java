@@ -2,20 +2,17 @@ package nl.tudelft.sem.template.activity.controllers;
 
 import nl.tudelft.sem.template.activity.authentication.AuthManager;
 import nl.tudelft.sem.template.activity.domain.NetId;
+import nl.tudelft.sem.template.activity.domain.entities.Competition;
+import nl.tudelft.sem.template.activity.domain.entities.Training;
 import nl.tudelft.sem.template.activity.domain.services.TrainingService;
-import nl.tudelft.sem.template.activity.models.AcceptRequestModel;
-import nl.tudelft.sem.template.activity.models.ActivityCancelModel;
-import nl.tudelft.sem.template.activity.models.JoinRequestModel;
-import nl.tudelft.sem.template.activity.models.TrainingCreateModel;
-import nl.tudelft.sem.template.activity.models.TrainingEditModel;
+import nl.tudelft.sem.template.activity.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RequestMapping("/training")
 @RestController
@@ -115,6 +112,24 @@ public class TrainingController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when canceling training.");
+        }
+    }
+
+    /**
+     * Gets a list of competitions available for a suitable position.
+     *
+     * @param positionModel Position in the boat for which to check
+     * @return a List of competitions
+     * @throws Exception Activity not found exception
+     */
+    @GetMapping("/find")
+    public ResponseEntity<List<Training>> getTrainings(@RequestBody PositionModel positionModel) throws Exception {
+        try {
+            List<Training> result = trainingService.getSuitableTraining(positionModel.getPosition());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "There is no competition that you are suitable for", e);
         }
     }
 
