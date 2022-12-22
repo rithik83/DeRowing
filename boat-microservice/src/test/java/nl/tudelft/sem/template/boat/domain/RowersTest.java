@@ -1,22 +1,27 @@
 package nl.tudelft.sem.template.boat.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class RowersTest {
     private NetId coxId;
     private NetId coachId;
-    private NetId portId1, portId2;
-    private NetId starboardId1, starboardId2;
+    private NetId portId1;
+    private NetId portId2;
+    private NetId starboardId1;
+    private NetId starboardId2;
     private NetId scullingId;
 
-    private Map<Position, List<NetId>> sameRowers, differentRowers, currentRowers;
+    private Map<Position, List<NetId>> sameRowers;
+    private Map<Position, List<NetId>> differentRowers;
+    private Map<Position, List<NetId>> currentRowers;
     private Rowers rowers;
 
     @BeforeEach
@@ -60,8 +65,9 @@ public class RowersTest {
     @Test
     void emptyConstructorTest() {
         Map<Position, List<NetId>> emptyRowers = new HashMap<>();
-        for (Position position : Position.values())
+        for (Position position : Position.values()) {
             emptyRowers.put(position, new ArrayList<>());
+        }
 
         rowers = new Rowers();
         assertEquals(emptyRowers, rowers.getCurrentRowers());

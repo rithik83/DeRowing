@@ -19,8 +19,10 @@ class BoatTest {
 
     private NetId coxId;
     private NetId coachId;
-    private NetId portId1, portId2;
-    private NetId starboardId1, starboardId2;
+    private NetId portId1;
+    private NetId portId2;
+    private NetId starboardId1;
+    private NetId starboardId2;
     private NetId scullingId;
 
     private Type type;

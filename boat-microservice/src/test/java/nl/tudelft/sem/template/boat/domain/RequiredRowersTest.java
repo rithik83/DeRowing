@@ -1,15 +1,18 @@
 package nl.tudelft.sem.template.boat.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class RequiredRowersTest {
-    private Map<Position, Integer> differentAmountOfPositions, sameAmountOfPositions, amountOfPositions;
+    private Map<Position, Integer> differentAmountOfPositions;
+    private Map<Position, Integer> sameAmountOfPositions;
+    private Map<Position, Integer> amountOfPositions;
     private RequiredRowers requiredRowers;
 
     @BeforeEach
@@ -43,10 +46,11 @@ public class RequiredRowersTest {
     }
 
     @Test
-    void emptyRequiredRowers () {
+    void emptyRequiredRowers() {
         Map<Position, Integer> emptyRequiredRowers = new HashMap<>();
-        for (Position position :  Position.values())
+        for (Position position :  Position.values()) {
             emptyRequiredRowers.put(position, Integer.MIN_VALUE);
+        }
 
         requiredRowers = new RequiredRowers();
         assertEquals(emptyRequiredRowers, requiredRowers.getAmountOfPositions());
