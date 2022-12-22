@@ -18,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TrainingService extends ActivityService {
@@ -193,6 +194,10 @@ public class TrainingService extends ActivityService {
     }
 
     public List<Training> getSuitableTraining(Position position) {
-        return trainingRepository.findAll();
+        List<Training> trainings = trainingRepository.findAll();
+        List<Long> allBoatIds = trainings.stream().map(x -> x.getBoatId()).collect(Collectors.toList());
+        List<Long> suitableBoatIds = boatRestService
+            .checkIfPositionAvailable(allBoatIds, position);
+        return trainingRepository.findAllTrainingsByBoatIds(suitableBoatIds);
     }
 }

@@ -129,7 +129,7 @@ public class TrainingController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "There is no competition that you are suitable for", e);
+                "There is no training sessions that you are suitable for", e);
         }
     }
 

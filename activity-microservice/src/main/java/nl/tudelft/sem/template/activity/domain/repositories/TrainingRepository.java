@@ -6,6 +6,8 @@ import nl.tudelft.sem.template.activity.domain.entities.Training;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TrainingRepository extends JpaRepository<Training, NetId> {
     /**
@@ -26,5 +28,7 @@ public interface TrainingRepository extends JpaRepository<Training, NetId> {
 
 
     Training findTrainingByAttendeesContains(NetId netId);
+
+    List<Training> findAllTrainingsByBoatIds(List<Long> boatIds);
 
 }
