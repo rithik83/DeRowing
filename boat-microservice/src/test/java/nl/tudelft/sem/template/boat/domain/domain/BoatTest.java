@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nl.tudelft.sem.template.boat.domain.Boat;
 import nl.tudelft.sem.template.boat.builders.Director;
-import nl.tudelft.sem.template.boat.domain.*;
+import nl.tudelft.sem.template.boat.domain.NetId;
+import nl.tudelft.sem.template.boat.domain.Position;
+import nl.tudelft.sem.template.boat.domain.RequiredRowers;
+import nl.tudelft.sem.template.boat.domain.Rowers;
+import nl.tudelft.sem.template.boat.domain.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
