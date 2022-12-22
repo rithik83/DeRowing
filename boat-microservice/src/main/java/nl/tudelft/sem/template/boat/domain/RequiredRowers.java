@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.boat.domain;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +18,7 @@ public class RequiredRowers {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
 	long id;
 
-    protected HashMap<Position, Integer> amountOfPositions;
+    protected Map<Position, Integer> amountOfPositions;
 
     /**
      * Empty constructor for RequiredRowers class.
@@ -32,17 +33,17 @@ public class RequiredRowers {
     /**
      * Basic constructor for RequiredRowers class.
      */
-    public RequiredRowers(HashMap<Position, Integer> currentRowers) {
+    public RequiredRowers(Map<Position, Integer> currentRowers) {
         this.amountOfPositions = currentRowers;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (!(o instanceof RequiredRowers)) {
             return false;
+        }
+        if (this == o) {
+            return true;
         }
         RequiredRowers rr = (RequiredRowers) o;
         return Objects.equals(amountOfPositions, rr.amountOfPositions);

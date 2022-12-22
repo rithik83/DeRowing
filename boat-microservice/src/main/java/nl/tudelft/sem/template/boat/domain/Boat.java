@@ -64,7 +64,7 @@ public class Boat {
      *
      * @return the required rowers for a boat
      */
-    public HashMap<Position, Integer> getRequiredRowers() {
+    public Map<Position, Integer> getRequiredRowers() {
         return this.requiredRowers.amountOfPositions;
     }
 

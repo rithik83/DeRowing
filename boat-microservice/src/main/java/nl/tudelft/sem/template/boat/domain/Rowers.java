@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.boat.domain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ public class Rowers {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     long id;
 
-    protected HashMap<Position, List<NetId>> currentRowers;
+    protected Map<Position, List<NetId>> currentRowers;
 
     /**
      * Empty constructor for Rowers class.
@@ -35,17 +36,17 @@ public class Rowers {
     /**
      * Basic constructor for Rowers class.
      */
-    public Rowers(HashMap<Position, List<NetId>> currentRowers) {
+    public Rowers(Map<Position, List<NetId>> currentRowers) {
         this.currentRowers = currentRowers;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (!(o instanceof Rowers)) {
             return false;
+        }
+        if (this == o) {
+            return true;
         }
         Rowers rr = (Rowers) o;
         return Objects.equals(currentRowers, rr.currentRowers);
