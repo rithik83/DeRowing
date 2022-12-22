@@ -249,29 +249,19 @@ public class CompetitionService extends ActivityService {
         boolean amateur = userDataRequestModel.isAmateur();
         return competitions
             .stream()
-            .filter(x -> {
-                if (gender == Gender.MALE)
-                    return x.getGenderConstraint() == GenderConstraint.ONLY_MALE
-                    || x.getGenderConstraint() == GenderConstraint.NO_CONSTRAINT;
-                else
-                    return x.getGenderConstraint() == GenderConstraint.ONLY_FEMALE
-                    || x.getGenderConstraint() == GenderConstraint.NO_CONSTRAINT;
-                }
-            )
+            .filter(x -> checkGender(gender, x.getGenderConstraint()))
             .filter(x -> {
                 if(x.isSingleOrganization())
                     return x.getOrganization().equals(organization);
-                else return true;
-
+                return true;
                 }
             )
             .filter(x -> {
-                if(amateur)
+                if (amateur) {
                     return x.isAllowAmateurs();
-                else
-                    return true;
                 }
-            )
+                return true;
+            })
             .map(Competition::getBoatId)
             .collect(Collectors.toList());
     }
