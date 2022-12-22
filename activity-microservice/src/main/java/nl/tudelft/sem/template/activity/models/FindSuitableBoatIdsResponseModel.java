@@ -5,6 +5,6 @@ import nl.tudelft.sem.template.activity.domain.entities.Competition;
 import java.util.List;
 
 @Data
-public class FindSuitableCompetitionResponseModel {
-    List<Competition> competitions;
+public class FindSuitableBoatIdsResponseModel {
+    List<Long> boatIds;
 }

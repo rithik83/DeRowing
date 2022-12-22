@@ -20,6 +20,7 @@ import nl.tudelft.sem.template.activity.models.CompetitionEditModel;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompetitionService extends ActivityService {
@@ -235,10 +236,43 @@ public class CompetitionService extends ActivityService {
      */
     public List<Competition> getSuitableCompetition(Position position) {
         UserDataRequestModel userDataRequestModel = userRestService.getUserData();
-        List<Competition> competitionsAreMetConstraints = competitionRepository
-                .findSuitableCompetitions("%" + userDataRequestModel.getGender().toString(),
-                        userDataRequestModel.getOrganization(),
-                        userDataRequestModel.isAmateur());
-        return boatRestService.checkIfPositionAvailable(competitionsAreMetConstraints, position);
+        List<Long> boatIdsAreMetConstraints = filterCompetitions(competitionRepository.getAllCompetition(),
+                            userDataRequestModel);
+        List<Long> suitableBoatIds = boatRestService
+            .checkIfPositionAvailable(boatIdsAreMetConstraints, position);
+        return competitionRepository.findAllCompetitionByBoatIds(suitableBoatIds);
+    }
+
+    public List<Long> filterCompetitions(List<Competition> competitions, UserDataRequestModel userDataRequestModel) {
+        Gender gender = userDataRequestModel.getGender();
+        String organization = userDataRequestModel.getOrganization();
+        boolean amateur = userDataRequestModel.isAmateur();
+        return competitions
+            .stream()
+            .filter(x -> {
+                if (gender == Gender.MALE)
+                    return x.getGenderConstraint() == GenderConstraint.ONLY_MALE
+                    || x.getGenderConstraint() == GenderConstraint.NO_CONSTRAINT;
+                else
+                    return x.getGenderConstraint() == GenderConstraint.ONLY_FEMALE
+                    || x.getGenderConstraint() == GenderConstraint.NO_CONSTRAINT;
+                }
+            )
+            .filter(x -> {
+                if(x.isSingleOrganization())
+                    return x.getOrganization().equals(organization);
+                else return true;
+
+                }
+            )
+            .filter(x -> {
+                if(amateur)
+                    return x.isAllowAmateurs();
+                else
+                    return true;
+                }
+            )
+            .map(Competition::getBoatId)
+            .collect(Collectors.toList());
     }
 }

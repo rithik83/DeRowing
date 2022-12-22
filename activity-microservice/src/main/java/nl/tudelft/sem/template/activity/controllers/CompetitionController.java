@@ -5,11 +5,7 @@ import nl.tudelft.sem.template.activity.domain.NetId;
 import nl.tudelft.sem.template.activity.domain.Position;
 import nl.tudelft.sem.template.activity.domain.entities.Competition;
 import nl.tudelft.sem.template.activity.domain.services.CompetitionService;
-import nl.tudelft.sem.template.activity.models.AcceptRequestModel;
-import nl.tudelft.sem.template.activity.models.ActivityCancelModel;
-import nl.tudelft.sem.template.activity.models.CompetitionCreateModel;
-import nl.tudelft.sem.template.activity.models.CompetitionEditModel;
-import nl.tudelft.sem.template.activity.models.JoinRequestModel;
+import nl.tudelft.sem.template.activity.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -140,14 +136,14 @@ public class CompetitionController {
     /**
      * Gets a list of competitions available for a suitable position.
      *
-     * @param position Position in the boat for which to check
+     * @param positionModel Position in the boat for which to check
      * @return a List of competitions
      * @throws Exception Activity not found exception
      */
     @GetMapping("/find")
-    public ResponseEntity<List<Competition>> getCompetitions(@RequestParam Position position) throws Exception {
+    public ResponseEntity<List<Competition>> getCompetitions(@RequestBody PositionModel positionModel) throws Exception {
         try {
-            List<Competition> result = competitionService.getSuitableCompetition(position);
+            List<Competition> result = competitionService.getSuitableCompetition(positionModel.getPosition());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class FindSuitableCompetitionModel {
+public class FindSuitableBoatIdsModel {
     List<Long> boatIds;
     Position position;
 }

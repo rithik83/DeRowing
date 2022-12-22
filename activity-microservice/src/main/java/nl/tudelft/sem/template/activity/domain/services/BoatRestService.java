@@ -2,21 +2,19 @@ package nl.tudelft.sem.template.activity.domain.services;
 
 import nl.tudelft.sem.template.activity.domain.Position;
 import nl.tudelft.sem.template.activity.domain.Type;
-import nl.tudelft.sem.template.activity.domain.entities.Competition;
 import nl.tudelft.sem.template.activity.domain.events.BoatChangeEvent;
 import nl.tudelft.sem.template.activity.domain.exceptions.UnsuccessfulRequestException;
 import nl.tudelft.sem.template.activity.models.BoatDeleteModel;
 import nl.tudelft.sem.template.activity.models.CreateBoatModel;
 import nl.tudelft.sem.template.activity.models.CreateBoatResponseModel;
-import nl.tudelft.sem.template.activity.models.FindSuitableCompetitionModel;
-import nl.tudelft.sem.template.activity.models.FindSuitableCompetitionResponseModel;
+import nl.tudelft.sem.template.activity.models.FindSuitableBoatIdsModel;
+import nl.tudelft.sem.template.activity.models.FindSuitableBoatIdsResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BoatRestService extends RestService {
@@ -80,19 +78,18 @@ public class BoatRestService extends RestService {
     /**
      * Checks if competitions are available for the specific position of the boat.
      *
-     * @param competitions The list of all competitions
+     * @param boatIds The list of ids of boats
      * @param position     The position to check for
      * @return a list of competitions, or an empty list if no competitions available
      */
-    public List<Competition> checkIfPositionAvailable(List<Competition> competitions, Position position) {
+    public List<Long> checkIfPositionAvailable(List<Long> boatIds, Position position) {
         String url = environment.getProperty(boatUrl);
         int port = Integer.parseInt(environment.getProperty(boatPort));
-        List<Long> boatIds = competitions.stream().map(x -> x.getBoatId()).collect(Collectors.toList());
-        FindSuitableCompetitionModel model = new FindSuitableCompetitionModel(boatIds, position);
+        FindSuitableBoatIdsModel model = new FindSuitableBoatIdsModel(boatIds, position);
         try {
             Object response = performRequest(model, url, port, "/boat/check", HttpMethod.POST);
-            return (response != null) ? ((FindSuitableCompetitionResponseModel) deserialize(response,
-                        FindSuitableCompetitionResponseModel.class)).getCompetitions(): null;
+            return (response != null) ? ((FindSuitableBoatIdsResponseModel) deserialize(response,
+                        FindSuitableBoatIdsResponseModel.class)).getBoatIds(): null;
         } catch (UnsuccessfulRequestException e) {
             System.out.println("There is no such competition that you are suitable for");
             return new ArrayList<>();
