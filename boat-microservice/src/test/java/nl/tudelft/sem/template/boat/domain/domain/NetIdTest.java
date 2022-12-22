@@ -1,8 +1,9 @@
-package nl.tudelft.sem.template.boat.domain;
+package nl.tudelft.sem.template.boat.domain.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import nl.tudelft.sem.template.boat.domain.NetId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Objects;
