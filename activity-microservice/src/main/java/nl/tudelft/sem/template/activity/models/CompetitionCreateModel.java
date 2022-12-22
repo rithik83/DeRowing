@@ -15,7 +15,6 @@ public class CompetitionCreateModel {
     private String organization;
     private long startTime;
     private Type type;
-    private int numPeople;
 
     /**
      *  Constructor for CompetitionCreateModel.
@@ -27,11 +26,10 @@ public class CompetitionCreateModel {
      * @param organization the organization
      * @param startTime the start time of the competition
      * @param type the type of the competition
-     * @param numPeople the number of people in the competition
      */
     public CompetitionCreateModel(String competitionName, GenderConstraint genderConstraint, boolean allowAmateurs,
                                   boolean singleOrganization, String organization, long startTime,
-                                  Type type, int numPeople) {
+                                  Type type) {
         this.competitionName = competitionName;
         this.genderConstraint = genderConstraint;
         this.allowAmateurs = allowAmateurs;
@@ -39,6 +37,5 @@ public class CompetitionCreateModel {
         this.organization = organization;
         this.startTime = startTime;
         this.type = type;
-        this.numPeople = numPeople;
     }
 }

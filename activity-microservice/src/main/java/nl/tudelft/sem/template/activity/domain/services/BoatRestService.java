@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.activity.domain.services;
 
 import nl.tudelft.sem.template.activity.domain.Position;
 import nl.tudelft.sem.template.activity.domain.Type;
+import nl.tudelft.sem.template.activity.domain.entities.Activity;
 import nl.tudelft.sem.template.activity.domain.entities.Competition;
 import nl.tudelft.sem.template.activity.domain.events.BoatChangeEvent;
 import nl.tudelft.sem.template.activity.domain.exceptions.UnsuccessfulRequestException;
@@ -10,12 +11,14 @@ import nl.tudelft.sem.template.activity.models.CreateBoatModel;
 import nl.tudelft.sem.template.activity.models.CreateBoatResponseModel;
 import nl.tudelft.sem.template.activity.models.FindSuitableCompetitionModel;
 import nl.tudelft.sem.template.activity.models.FindSuitableCompetitionResponseModel;
+import nl.tudelft.sem.template.activity.models.UserDataRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BoatRestService extends RestService {
@@ -53,23 +56,18 @@ public class BoatRestService extends RestService {
      * Tells the boat service to create a new boat.
      *
      * @param type      the type of boat to create
-     * @param numPeople the number of people the boat can hold
      * @return the boat id of the newly creted boat.
      */
-    public long getBoatId(Type type, int numPeople) {
+    public long getBoatId(Type type) {
         String url = environment.getProperty(boatUrl);
         int port = Integer.parseInt(environment.getProperty(boatPort));
         CreateBoatModel model = new CreateBoatModel();
         model.setType(type);
-        model.setNumPeople(numPeople);
         try {
-            CreateBoatResponseModel response =
-                    (CreateBoatResponseModel)
-                            performRequest(model, url, port, "/boat/create", HttpMethod.POST);
-            if (response == null) {
-                return -1;
-            }
-            return response.getBoatId();
+            Object genericResponse = performRequest(model, url, port, "/boat/create", HttpMethod.POST);
+            return (genericResponse != null)
+                    ? ((CreateBoatResponseModel) deserialize(genericResponse, CreateBoatResponseModel.class)).getBoatId()
+                    : -1;
         } catch (UnsuccessfulRequestException e) {
             System.out.println("Boat microservice seems unavailable");
             return -1;

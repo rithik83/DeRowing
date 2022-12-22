@@ -10,7 +10,7 @@ class TrainingTest {
 
     @BeforeEach
     public void setup() {
-        test = new Training(new NetId("123"), "name", 123L, 123L, 1,
+        test = new Training(new NetId("123"), "name", 123L, 123L,
                 Type.C4);
     }
 }

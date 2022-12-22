@@ -26,11 +26,10 @@ public class Boat {
      * Identifier for the boat.
      */
     @Id
-    @Column(name = "id", nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type")
     private Type type;
 
     // TODO: create connection to Users table

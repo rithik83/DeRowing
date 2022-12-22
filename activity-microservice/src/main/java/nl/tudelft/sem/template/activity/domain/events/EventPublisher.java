@@ -32,8 +32,4 @@ public class EventPublisher {
         UserJoinEvent userJoinEvent = new UserJoinEvent(owner, position, activityId);
         applicationEventPublisher.publishEvent(userJoinEvent);
     }
-
-    public void publishFindingSuitableCompetitions(List<Competition> competitions, Position position) {
-
-    }
 }

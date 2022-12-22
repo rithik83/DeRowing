@@ -4,8 +4,10 @@ import nl.tudelft.sem.template.activity.domain.Gender;
 import nl.tudelft.sem.template.activity.domain.NetId;
 import nl.tudelft.sem.template.activity.domain.entities.Competition;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -28,9 +30,18 @@ public interface CompetitionRepository extends JpaRepository<Competition, NetId>
      */
     boolean existsById(long id);
 
-    Competition findCompetitionByAttendeesContains(NetId netId);
 
-    @Query(value = "SELECT * FROM COMPETITION c WHERE c.allowAmateurs = ?3 "
+    List<Competition> findAllByBoatIdIn(List<Long> ids);
+
+    @Transactional
+    void deleteById(long id);
+
+    @Modifying
+    @Query(value = "ALTER SEQUENCE HIBERNATE_SEQUENCE restart with 1", nativeQuery = true)
+    @Transactional
+    void resetSequence();
+
+    @Query(value = "SELECT * FROM COMPETITIONS c WHERE c.allowAmateurs = ?3 "
             + "AND c.genderConstraint = ?1 AND c.organization = ?2", nativeQuery = true)
     List<Competition> findSuitableCompetitions(Gender gender, String organization, boolean isAmateur);
 }

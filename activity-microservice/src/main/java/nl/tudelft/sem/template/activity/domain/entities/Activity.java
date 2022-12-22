@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +28,7 @@ public abstract class Activity {
     @Column(name = "owner")
     private NetId owner;
     @Column(name = "attendees")
-    @ElementCollection(targetClass = NetId.class)
+    @ElementCollection(targetClass = NetId.class, fetch = FetchType.EAGER)
     private List<NetId> attendees;
     @Column(name = "activityName")
     private String activityName;
@@ -48,15 +49,13 @@ public abstract class Activity {
      * @param activityName the name of the activity
      * @param boatId    the id of the boat
      * @param startTime the start time of the activity
-     * @param numPeople the number of people in the boat
      * @param type the type of the boat
      */
-    public Activity(NetId netId, String activityName, long boatId, long startTime, int numPeople, Type type) {
+    public Activity(NetId netId, String activityName, long boatId, long startTime, Type type) {
         this.owner = netId;
         this.activityName = activityName;
         this.boatId = boatId;
         this.startTime = startTime;
-        this.numPeople = numPeople;
         this.type = type;
     }
 
@@ -114,10 +113,6 @@ public abstract class Activity {
 
     public void setOwner(NetId owner) {
         this.owner = owner;
-    }
-
-    public void setNumPeople(int numPeople) {
-        this.numPeople = numPeople;
     }
 
     /**

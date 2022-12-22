@@ -7,7 +7,5 @@ import nl.tudelft.sem.template.activity.domain.Type;
 public class TrainingEditModel {
     private String trainingName;
     private long startTime;
-    private Type type;
-    private int numPeople;
     private long id;
 }

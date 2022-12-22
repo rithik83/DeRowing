@@ -116,6 +116,7 @@ public class TrainingController {
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when canceling training.");
         }
+
     }
 
 }

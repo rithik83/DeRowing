@@ -33,7 +33,7 @@ class CompetitionRepositoryTest {
         id = new NetId("123");
         authManager = mock(AuthManager.class);
         when(authManager.getNetId()).thenReturn("123");
-        competition = new Competition(id, "name", 123L, 123L, 1,
+        competition = new Competition(id, "name", 123L, 123L,
                 false, GenderConstraint.ONLY_MALE, false, "TUDELFT", Type.C4);
         competitionRepository = mock(CompetitionRepository.class);
     }

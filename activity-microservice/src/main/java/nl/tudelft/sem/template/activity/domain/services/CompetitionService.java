@@ -62,10 +62,9 @@ public class CompetitionService extends ActivityService {
         boolean allowAmateurs = request.isAllowAmateurs();
         boolean singleOrganization = request.isSingleOrganization();
         GenderConstraint genderConstraint = request.getGenderConstraint();
-        int numPeople = request.getNumPeople();
         Type boatType = request.getType();
         String organization = request.getOrganization();
-        Competition competition = new Competition(netId, competitionName, boatId, startTime, numPeople,
+        Competition competition = new Competition(netId, competitionName, boatId, startTime,
                 allowAmateurs, genderConstraint, singleOrganization, organization, boatType);
         return competition;
     }
@@ -80,7 +79,7 @@ public class CompetitionService extends ActivityService {
      */
     public String createCompetition(CompetitionCreateModel request, NetId netId) throws Exception {
         try {
-            long boatId = boatRestService.getBoatId(request.getType(), request.getNumPeople());
+            long boatId = boatRestService.getBoatId(request.getType());
             if (boatId == -1) {
                 return "Could not contact boat service";
             }
@@ -110,11 +109,7 @@ public class CompetitionService extends ActivityService {
      * @throws Exception the competition not found exception
      */
     public Competition findCompetitions(long id) throws Exception {
-        try {
-            return competitionRepository.findById(id);
-        } catch (Exception e) {
-            throw new Exception("Something went wrong in findCompetitions");
-        }
+        return competitionRepository.findById(id);
     }
 
     /**
@@ -223,7 +218,6 @@ public class CompetitionService extends ActivityService {
         competition.setSingleOrganization(request.isSingleOrganization());
         competition.setOrganization(request.getOrganization());
         competition.setStartTime(request.getStartTime());
-        competition.setNumPeople(request.getNumPeople());
         return competition;
     }
 

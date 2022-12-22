@@ -54,7 +54,7 @@ public class TrainingService extends ActivityService {
      */
     public Training parseRequest(TrainingCreateModel request, NetId netId, long boatId) {
         return new Training(netId, request.getTrainingName(), boatId,
-                request.getStartTime(), request.getNumPeople(), request.getType());
+                request.getStartTime(), request.getType());
     }
 
 
@@ -67,19 +67,13 @@ public class TrainingService extends ActivityService {
      * @throws Exception the already using this netId exception
      */
     public String createTraining(TrainingCreateModel request, NetId netId) throws Exception {
-        try {
-            long boatId = boatRestService.getBoatId(request.getType(), request.getNumPeople());
-            if (boatId == -1) {
-                return "Could not contact boat service";
-            }
-            Training training = parseRequest(request, netId, boatId);
-            trainingRepository.save(training);
-            return "Training successfully created";
-        } catch (DataIntegrityViolationException e) {
-            throw new NetIdAlreadyInUseException(netId);
-        } catch (Exception e) {
-            throw new Exception("Something went wrong in createTraining");
+        long boatId = boatRestService.getBoatId(request.getType());
+        if (boatId == -1) {
+            return "Could not contact boat service";
         }
+        Training training = parseRequest(request, netId, boatId);
+        trainingRepository.save(training);
+        return "Training successfully created";
     }
 
     /**
@@ -100,14 +94,15 @@ public class TrainingService extends ActivityService {
      */
     public String joinTraining(JoinRequestModel request) {
         Training training = trainingRepository.findById(request.getActivityId());
+        if (training == null) {
+            return "this competition ID does not exist";
+        }
         long startTime = training.getStartTime();
         boolean isInOneDay = (startTime - currentTimeProvider.getCurrentTime().toEpochMilli()) < 86400000;
         if (isInOneDay) {
             return "Sorry you can't join this training since it will start in one day.";
         }
-        if (training == null) {
-            return "this competition ID does not exist";
-        }
+
         UserDataRequestModel userData = userRestService.getUserData();
         if (userData == null) {
             return "We could not get your user information from the user service";
@@ -167,7 +162,6 @@ public class TrainingService extends ActivityService {
      */
     public Training update(Training training, TrainingEditModel request) {
         training.setActivityName(request.getTrainingName());
-        training.setNumPeople(request.getNumPeople());
         training.setStartTime(request.getStartTime());
         return training;
     }

@@ -22,7 +22,7 @@ class TrainingRepositoryTest {
 
     @BeforeEach
     public void setup() {
-        training = new Training(new NetId("123"), "testname", 123L, 123L, 1, Type.C4);
+        training = new Training(new NetId("123"), "testname", 123L, 123L, Type.C4);
         trainingRepository = mock(TrainingRepository.class);
     }
 

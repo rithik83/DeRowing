@@ -6,5 +6,4 @@ import nl.tudelft.sem.template.activity.domain.Type;
 @Data
 public class CreateBoatModel {
     private Type type;
-    private int numPeople;
 }

@@ -17,13 +17,13 @@ public class ActivityService {
      * @return if succeeded
      */
     public boolean persistNewActivity(AcceptRequestModel model, JpaRepository repository) {
-        if (!model.isAccepted()) {
-            return true;
-        }
         long activityId = model.getActivityId();
         Optional<Activity> optionalActivity = repository.findById(activityId);
         if (optionalActivity.isEmpty()) {
             return false;
+        }
+        if (!model.isAccepted()) {
+            return true;
         }
         Activity activity = optionalActivity.get();
         List<NetId> attendees = activity.getAttendees();
@@ -46,9 +46,10 @@ public class ActivityService {
             return "Could not find activity";
         }
         eventPublisher.publishAcceptance(model.isAccepted(), model.getPosition(), model.getRequestee());
-        Activity activity = (Activity) repository.findById(model.getActivityId()).get();
-        long boatId = activity.getBoatId();
-        eventPublisher.publishBoatChange(boatId, model.getPosition(), model.getRequestee());
-        return "The user is now part of the activity";
+        if (model.isAccepted()) {
+            Activity activity = (Activity) repository.findById(model.getActivityId()).get();
+            eventPublisher.publishBoatChange(activity.getBoatId(), model.getPosition(), model.getRequestee());
+        }
+        return "The user is informed of your decision";
     }
 }

@@ -9,8 +9,8 @@ import nl.tudelft.sem.template.activity.domain.Type;
 @NoArgsConstructor
 public class Training extends Activity {
 
-    public Training(NetId netId, String activityName, long boatId, long startTime, int numPeople,
+    public Training(NetId netId, String activityName, long boatId, long startTime,
                     Type type) {
-        super(netId, activityName, boatId, startTime, numPeople, type);
+        super(netId, activityName, boatId, startTime, type);
     }
 }

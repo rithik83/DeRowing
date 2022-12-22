@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.boat.builders;
 import nl.tudelft.sem.template.boat.domain.Boat;
 
 public interface BoatBuilder {
-    Boat boat = null;
 
     /**
      * Reset method which instantiates a new boat for this constructor.
