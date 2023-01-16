@@ -2,9 +2,9 @@ package nl.tudelft.sem.template.activity.controllers;
 
 import nl.tudelft.sem.template.activity.authentication.AuthManager;
 import nl.tudelft.sem.template.activity.domain.NetId;
-import nl.tudelft.sem.template.activity.domain.Position;
 import nl.tudelft.sem.template.activity.domain.entities.Competition;
-import nl.tudelft.sem.template.activity.domain.services.CompetitionService;
+import nl.tudelft.sem.template.activity.domain.services.CompetitionServiceServerSide;
+import nl.tudelft.sem.template.activity.domain.services.CompetitionServiceUserSide;
 import nl.tudelft.sem.template.activity.models.AcceptRequestModel;
 import nl.tudelft.sem.template.activity.models.ActivityCancelModel;
 import nl.tudelft.sem.template.activity.models.CompetitionCreateModel;
@@ -34,18 +34,23 @@ public class CompetitionController {
 
     private final transient AuthManager authManager;
 
-    private final transient CompetitionService competitionService;
+    private final transient CompetitionServiceServerSide competitionServiceServerSide;
+
+    private final transient CompetitionServiceUserSide competitionServiceUserSide;
 
     /**
      * Instantiates a new controller.
      *
-     * @param authManager        Spring Security component used to authenticate and authorize the user
-     * @param competitionService the service provider of all activities
+     * @param authManager         Spring Security component used to authenticate and authorize the user
+     * @param competitionServiceServerSide  the service provider of all activities
+     * @param competitionServiceUserSide the service provider of userSide
      */
     @Autowired
-    public CompetitionController(AuthManager authManager, CompetitionService competitionService) {
+    public CompetitionController(AuthManager authManager, CompetitionServiceServerSide competitionServiceServerSide,
+                                 CompetitionServiceUserSide competitionServiceUserSide) {
         this.authManager = authManager;
-        this.competitionService = competitionService;
+        this.competitionServiceServerSide = competitionServiceServerSide;
+        this.competitionServiceUserSide = competitionServiceUserSide;
     }
 
     /**
@@ -68,7 +73,7 @@ public class CompetitionController {
     @PostMapping("/create")
     public ResponseEntity<String> createCompetition(@RequestBody CompetitionCreateModel request) {
         try {
-            String status = competitionService.createCompetition(request, new NetId(authManager.getNetId()));
+            String status = competitionServiceServerSide.createCompetition(request, new NetId(authManager.getNetId()));
             return ResponseEntity.ok(status);
         } catch (Exception e) {
             return ResponseEntity.ok(e.getMessage());
@@ -85,7 +90,7 @@ public class CompetitionController {
     @PostMapping("/join")
     public ResponseEntity<String> joinCompetition(@RequestBody JoinRequestModel request) {
         try {
-            String response = competitionService.joinCompetition(request);
+            String response = competitionServiceUserSide.joinCompetition(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when joining the competition.");
@@ -101,7 +106,7 @@ public class CompetitionController {
     @PostMapping("/inform")
     public ResponseEntity<String> informUser(@RequestBody AcceptRequestModel model) {
         try {
-            String status = competitionService.informUser(model);
+            String status = competitionServiceUserSide.informUser(model);
             return ResponseEntity.ok(status);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when informing users.");
@@ -118,7 +123,8 @@ public class CompetitionController {
     @PostMapping("/cancel")
     public ResponseEntity<String> cancelCompetition(@RequestBody ActivityCancelModel activityCancelModel) throws Exception {
         try {
-            String status = competitionService.deleteCompetition(activityCancelModel.getId(), authManager.getNetId());
+            String status = competitionServiceServerSide.deleteCompetition(activityCancelModel.getId(),
+                    authManager.getNetId());
             return ResponseEntity.ok(status);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when canceling the competition.");
@@ -135,7 +141,7 @@ public class CompetitionController {
     @PostMapping("/edit")
     public ResponseEntity<String> editCompetition(@RequestBody CompetitionEditModel request) throws Exception {
         try {
-            String status = competitionService.editCompetition(request, authManager.getNetId());
+            String status = competitionServiceServerSide.editCompetition(request, authManager.getNetId());
             return ResponseEntity.ok(status);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when editing competition.");
@@ -153,7 +159,7 @@ public class CompetitionController {
     public ResponseEntity<List<Competition>> getCompetitions(@RequestBody PositionEntryModel position) {
         try {
             //System.out.println("you reached the method");
-            List<Competition> result = competitionService.getSuitableCompetition(position);
+            List<Competition> result = competitionServiceUserSide.getSuitableCompetition(position);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.OK, "No suitable competition found.");

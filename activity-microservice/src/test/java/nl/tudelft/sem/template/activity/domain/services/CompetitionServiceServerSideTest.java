@@ -22,16 +22,16 @@ import nl.tudelft.sem.template.activity.models.UserDataRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import java.time.Instant;
 
-class CompetitionServiceTest {
+class CompetitionServiceServerSideTest {
 
     private transient EventPublisher eventPublisher;
     private transient CompetitionRepository competitionRepository;
     private transient RestServiceFacade restServiceFacade;
-    private transient CompetitionService sut;
+    private transient CompetitionServiceServerSide sut;
+    private transient CompetitionServiceUserSide sut2;
     private transient CurrentTimeProvider currentTimeProvider;
 
     @BeforeEach
@@ -41,7 +41,10 @@ class CompetitionServiceTest {
         this.competitionRepository = Mockito.mock(CompetitionRepository.class);
         this.restServiceFacade = Mockito.mock(RestServiceFacade.class);
         this.currentTimeProvider = Mockito.mock(CurrentTimeProvider.class);
-        this.sut = new CompetitionService(eventPublisher, competitionRepository, restServiceFacade, currentTimeProvider);
+        this.sut = new CompetitionServiceServerSide(eventPublisher, competitionRepository,
+                restServiceFacade, currentTimeProvider);
+        this.sut2 = new CompetitionServiceUserSide(eventPublisher,
+                competitionRepository, restServiceFacade, currentTimeProvider);
     }
 
     public Competition fabricateCompetition(long id, long boatId, Type type) {
@@ -87,17 +90,17 @@ class CompetitionServiceTest {
         JoinRequestModel request = new JoinRequestModel();
         request.setActivityId(1L);
         request.setPosition(Position.STARBOARD);
-        sut.joinCompetition(request);
+        sut2.joinCompetition(request);
 
         // Competition doesn't exist
-        String result = sut.joinCompetition(request);
+        String result = sut2.joinCompetition(request);
         assertEquals("this competition ID does not exist", result);
 
         // Competition exists, but no Userdata
         Competition competition = fabricateCompetition(1L, 1L, Type.C4);
 
         when(competitionRepository.findById(1L)).thenReturn(competition);
-        result = sut.joinCompetition(request);
+        result = sut2.joinCompetition(request);
         assertEquals("We could not get your user information from the user service", result);
 
         // Complies with all constraints
@@ -109,31 +112,31 @@ class CompetitionServiceTest {
 
         when(restServiceFacade.performUserModel(null, "/getdetails", UserDataRequestModel.class)).thenReturn(userData);
 
-        result = sut.joinCompetition(request);
+        result = sut2.joinCompetition(request);
         assertEquals("Done! Your request has been processed", result);
 
         // Does not meet amateur constraint
         competition.setAllowAmateurs(false);
-        result = sut.joinCompetition(request);
+        result = sut2.joinCompetition(request);
         assertEquals("you do not meet the constraints of this competition", result);
 
         // Does not meet the organization constraint
         competition.setAllowAmateurs(true);
         competition.setSingleOrganization(true);
-        result = sut.joinCompetition(request);
+        result = sut2.joinCompetition(request);
         assertEquals("you do not meet the constraints of this competition", result);
 
         // Does not meet the Gender constraint
         competition.setSingleOrganization(false);
         competition.setGenderConstraint(GenderConstraint.ONLY_FEMALE);
-        result = sut.joinCompetition(request);
+        result = sut2.joinCompetition(request);
         assertEquals("you do not meet the constraints of this competition", result);
 
         // Does not meet the certificate constraint
         competition.setGenderConstraint(GenderConstraint.NO_CONSTRAINT);
         competition.setType(Type.PLUS4);
         request.setPosition(Position.COX);
-        result = sut.joinCompetition(request);
+        result = sut2.joinCompetition(request);
         assertEquals("you do not have the required certificate to be cox", result);
 
 
