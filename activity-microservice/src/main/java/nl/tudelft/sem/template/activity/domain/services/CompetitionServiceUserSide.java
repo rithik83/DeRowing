@@ -98,13 +98,10 @@ public class CompetitionServiceUserSide extends ActivityService {
      * @return a boolean value which shows that whether the attendee could be admitted
      */
     private boolean checkGender(Gender gender, GenderConstraint constraint) {
-        if (constraint == GenderConstraint.NO_CONSTRAINT) {
+        if(constraint.value == 3) {
             return true;
         }
-        if (constraint == GenderConstraint.ONLY_MALE && gender == Gender.MALE) {
-            return true;
-        }
-        return constraint == GenderConstraint.ONLY_FEMALE && gender == Gender.FEMALE;
+        return (constraint.value == gender.value);
     }
 
     /**

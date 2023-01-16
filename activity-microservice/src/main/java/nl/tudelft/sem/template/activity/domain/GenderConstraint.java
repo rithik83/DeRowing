@@ -1,7 +1,11 @@
 package nl.tudelft.sem.template.activity.domain;
 
 public enum GenderConstraint {
-    NO_CONSTRAINT,
-    ONLY_MALE,
-    ONLY_FEMALE
+    ONLY_MALE(1),
+    ONLY_FEMALE(2),
+    NO_CONSTRAINT(3);
+    public final int value;
+    GenderConstraint(int value) {
+        this.value = value;
+    }
 }
