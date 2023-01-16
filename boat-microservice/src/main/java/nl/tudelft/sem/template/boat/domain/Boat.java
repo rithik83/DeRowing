@@ -79,17 +79,6 @@ public class Boat {
     }
 
     /**
-     * Removes the rower(s) from a certain position of the boat.
-     *
-     * @param position the position to be removed
-     */
-    public void removePosition(Position position) {
-        requiredRowers.amountOfPositions.remove(position);
-        requiredRowers.amountOfPositions.put(position, 0);
-        rowers.currentRowers.replace(position, new ArrayList<>());
-    }
-
-    /**
      * Removes rower from the boat.
      *
      * @param currentNetId the user's netId to be removed
@@ -106,16 +95,6 @@ public class Boat {
             }
         }
         return false;
-    }
-
-    /**
-     * Checks whether the user can be added as a rower on the boat.
-
-     * @param position the user's position
-     * @return true whether the user is eligible, false otherwise
-     */
-    public boolean canRowerBeAdded(Position position) {
-        return (requiredRowers.amountOfPositions.get(position) > 0);
     }
 
     /**
