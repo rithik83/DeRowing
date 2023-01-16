@@ -2,10 +2,9 @@ package nl.tudelft.sem.template.activity.controllers;
 
 import nl.tudelft.sem.template.activity.authentication.AuthManager;
 import nl.tudelft.sem.template.activity.domain.NetId;
-import nl.tudelft.sem.template.activity.domain.Position;
-import nl.tudelft.sem.template.activity.domain.entities.Competition;
 import nl.tudelft.sem.template.activity.domain.entities.Training;
-import nl.tudelft.sem.template.activity.domain.services.TrainingService;
+import nl.tudelft.sem.template.activity.domain.services.TrainingServiceServerSide;
+import nl.tudelft.sem.template.activity.domain.services.TrainingServiceUserSide;
 import nl.tudelft.sem.template.activity.models.AcceptRequestModel;
 import nl.tudelft.sem.template.activity.models.ActivityCancelModel;
 import nl.tudelft.sem.template.activity.models.JoinRequestModel;
@@ -28,18 +27,22 @@ public class TrainingController {
 
     private final transient AuthManager authManager;
 
-    private final transient TrainingService trainingService;
+    private final transient TrainingServiceUserSide trainingServiceUserSide;
+
+    private final transient TrainingServiceServerSide trainingServiceServerSide;
 
     /**
      * The controller of trainings.
      *
      * @param authManager      Spring Security component used to authenticate and authorize the user
-     * @param trainingService  the service provider of all activities
+     * @param trainingServiceUserSide  the service provider of all activities
      */
     @Autowired
-    public TrainingController(AuthManager authManager, TrainingService trainingService) {
+    public TrainingController(AuthManager authManager, TrainingServiceUserSide trainingServiceUserSide,
+                              TrainingServiceServerSide trainingServiceServerSide) {
         this.authManager = authManager;
-        this.trainingService = trainingService;
+        this.trainingServiceUserSide = trainingServiceUserSide;
+        this.trainingServiceServerSide = trainingServiceServerSide;
     }
 
     /**
@@ -52,7 +55,7 @@ public class TrainingController {
     @PostMapping("/create")
     public ResponseEntity<String> createTraining(@RequestBody TrainingCreateModel request) throws Exception {
         try {
-            String response = trainingService.createTraining(request, new NetId(authManager.getNetId()));
+            String response = trainingServiceServerSide.createTraining(request, new NetId(authManager.getNetId()));
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when creating training.");
@@ -68,7 +71,7 @@ public class TrainingController {
     @PostMapping("/inform")
     public ResponseEntity<String> informUser(@RequestBody AcceptRequestModel model) {
         try {
-            String status = trainingService.informUser(model);
+            String status = trainingServiceUserSide.informUser(model);
             return ResponseEntity.ok(status);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when informing user.");
@@ -84,7 +87,7 @@ public class TrainingController {
     @PostMapping("/join")
     public ResponseEntity<String> joinTraining(@RequestBody JoinRequestModel request) {
         try {
-            String response = trainingService.joinTraining(request);
+            String response = trainingServiceUserSide.joinTraining(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when joining training.");
@@ -100,7 +103,7 @@ public class TrainingController {
     @PostMapping("/edit")
     public ResponseEntity<String> editTraining(@RequestBody TrainingEditModel request) {
         try {
-            String response = trainingService.editTraining(request, authManager.getNetId());
+            String response = trainingServiceServerSide.editTraining(request, authManager.getNetId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when editing training.");
@@ -116,7 +119,7 @@ public class TrainingController {
     @PostMapping("/cancel")
     public ResponseEntity<String> cancelTraining(@RequestBody ActivityCancelModel activityCancelModel) {
         try {
-            String response = trainingService.deleteTraining(activityCancelModel.getId(), authManager.getNetId());
+            String response = trainingServiceServerSide.deleteTraining(activityCancelModel.getId(), authManager.getNetId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when canceling training.");
@@ -133,7 +136,7 @@ public class TrainingController {
     @PostMapping("/find")
     public ResponseEntity<List<Training>> getTrainings(@RequestBody PositionEntryModel model) {
         try {
-            List<Training> result = trainingService.getSuitableCompetition(model.getPosition());
+            List<Training> result = trainingServiceUserSide.getSuitableCompetition(model.getPosition());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,

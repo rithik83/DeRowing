@@ -24,9 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import java.time.Instant;
 
-class TrainingServiceTest {
+class TrainingServiceServerSideTest {
 
-    private TrainingService trainingService;
+    private TrainingServiceUserSide trainingServiceUserSide;
+
+    private TrainingServiceServerSide trainingServiceServerSide;
 
     private TrainingCreateModel trainingCreateModel;
 
@@ -71,8 +73,10 @@ class TrainingServiceTest {
         joinRequestModel.setActivityId(123L);
         joinRequestModel.setPosition(Position.COACH);
         acceptRequestModel = new AcceptRequestModel();
-        trainingService = new TrainingService(eventPublisher, restServiceFacade,
+        trainingServiceUserSide = new TrainingServiceUserSide(eventPublisher, restServiceFacade,
                 trainingRepository, currentTimeProvider);
+        trainingServiceServerSide = new TrainingServiceServerSide(eventPublisher, restServiceFacade,
+                trainingRepository);
         id = new NetId("123");
         training = new Training(id, trainingCreateModel.getTrainingName(), 123L, 123L,
                 Type.C4);
@@ -81,7 +85,7 @@ class TrainingServiceTest {
 
     @Test
     void parseRequest() {
-        Assertions.assertEquals(training, trainingService
+        Assertions.assertEquals(training, trainingServiceServerSide
                 .parseRequest(trainingCreateModel, id, 123L));
     }
 
@@ -90,7 +94,7 @@ class TrainingServiceTest {
         when(restServiceFacade.performBoatModel(any(), any(), any())).thenReturn(new CreateBoatResponseModel(123L));
         when(trainingRepository.save(training)).thenReturn(training);
         Assertions.assertEquals("Successfully created training",
-                trainingService.createTraining(trainingCreateModel, new NetId("123")));
+                trainingServiceServerSide.createTraining(trainingCreateModel, new NetId("123")));
     }
 
     @Test
@@ -98,22 +102,22 @@ class TrainingServiceTest {
         when(trainingRepository.findById(123L)).thenReturn(training);
         when(currentTimeProvider.getCurrentTime()).thenReturn(Instant.ofEpochSecond(123L));
         Assertions.assertEquals("Sorry you can't join this training "
-                + "since it will start in one day.", trainingService.joinTraining(joinRequestModel));
+                + "since it will start in one day.", trainingServiceUserSide.joinTraining(joinRequestModel));
     }
 
     @Test
     void testFindTraining() throws Exception {
         when(trainingRepository.findById(123L)).thenReturn(training);
-        Assertions.assertEquals(training, trainingService.findTraining(123L));
+        Assertions.assertEquals(training, trainingServiceUserSide.findTraining(123L));
     }
 
     @Test
     void deleteTraining() throws Exception {
         when(authManager.getNetId()).thenReturn("123");
         BoatDeleteModel boatDeleteModel = new BoatDeleteModel(123L);
-        when(trainingService.findTraining(123L)).thenReturn(training);
+        when(trainingServiceUserSide.findTraining(123L)).thenReturn(training);
         Assertions.assertEquals("Successfully deleted training",
-                trainingService.deleteTraining(123L, authManager.getNetId()));
+                trainingServiceServerSide.deleteTraining(123L, authManager.getNetId()));
     }
 
     @Test
@@ -122,7 +126,7 @@ class TrainingServiceTest {
                 Type.C4);
         TrainingEditModel trainingEditModel = new TrainingEditModel();
         trainingEditModel.setTrainingName("newName");
-        training = trainingService.update(training, trainingEditModel);
+        training = trainingServiceServerSide.update(training, trainingEditModel);
         Assertions.assertEquals(temp, training);
     }
 
@@ -134,7 +138,7 @@ class TrainingServiceTest {
         TrainingEditModel trainingEditModel = new TrainingEditModel();
         trainingEditModel.setTrainingName("newName");
         Assertions.assertThrows(Exception.class, () -> {
-            trainingService.editTraining(trainingEditModel, authManager.getNetId());
+            trainingServiceServerSide.editTraining(trainingEditModel, authManager.getNetId());
         });
     }
 }
