@@ -36,7 +36,9 @@ class TrainingControllerTest {
 
     private TrainingCreateModel trainingCreateModel;
 
-    private TrainingController trainingController;
+    private TrainingControllerUserSide trainingControllerUserSide;
+
+    private TrainingControllerServerSide trainingControllerServerSide;
 
     private AcceptRequestModel acceptRequestModel;
 
@@ -56,7 +58,8 @@ class TrainingControllerTest {
         joinRequestModel = new JoinRequestModel();
         trainingEditModel = new TrainingEditModel();
         activityCancelModel = new ActivityCancelModel(123L);
-        trainingController = new TrainingController(authManager, trainingServiceUserSide, trainingServiceServerSide);
+        trainingControllerUserSide = new TrainingControllerUserSide(trainingServiceUserSide);
+        trainingControllerServerSide = new TrainingControllerServerSide(authManager, trainingServiceServerSide);
         trainingCreateModel = new TrainingCreateModel("test", 123L, Type.C4);
     }
 
@@ -66,7 +69,7 @@ class TrainingControllerTest {
         when(trainingServiceServerSide.createTraining(trainingCreateModel, new NetId(authManager.getNetId())))
                 .thenReturn("success");
         Assertions.assertEquals(new ResponseEntity<>("success", HttpStatus.valueOf(200)),
-                trainingController.createTraining(trainingCreateModel));
+                trainingControllerServerSide.createTraining(trainingCreateModel));
     }
 
     @Test
@@ -74,7 +77,7 @@ class TrainingControllerTest {
         when(authManager.getNetId()).thenReturn("123");
         when(trainingServiceUserSide.informUser(acceptRequestModel)).thenReturn("success");
         Assertions.assertEquals(new ResponseEntity<>("success", HttpStatus.valueOf(200)),
-                trainingController.informUser(acceptRequestModel));
+                trainingControllerUserSide.informUser(acceptRequestModel));
     }
 
     @Test
@@ -82,7 +85,7 @@ class TrainingControllerTest {
         when(authManager.getNetId()).thenReturn("123");
         when(trainingServiceUserSide.joinTraining(joinRequestModel)).thenReturn("success");
         Assertions.assertEquals(new ResponseEntity<>("success", HttpStatus.valueOf(200)),
-                trainingController.joinTraining(joinRequestModel));
+                trainingControllerUserSide.joinTraining(joinRequestModel));
     }
 
     @Test
@@ -90,7 +93,7 @@ class TrainingControllerTest {
         when(authManager.getNetId()).thenReturn("123");
         when(trainingServiceServerSide.editTraining(trainingEditModel, authManager.getNetId())).thenReturn("success");
         Assertions.assertEquals(new ResponseEntity<>("success", HttpStatus.valueOf(200)),
-                trainingController.editTraining(trainingEditModel));
+                trainingControllerServerSide.editTraining(trainingEditModel));
     }
 
     @Test
@@ -99,6 +102,6 @@ class TrainingControllerTest {
         when(trainingServiceServerSide.deleteTraining(123L, authManager.getNetId())).thenReturn("success");
         //when(activityCancelModel.getId()).thenReturn(123L);
         Assertions.assertEquals(new ResponseEntity<>("success", HttpStatus.valueOf(200)),
-                trainingController.cancelTraining(activityCancelModel));
+                trainingControllerServerSide.cancelTraining(activityCancelModel));
     }
 }

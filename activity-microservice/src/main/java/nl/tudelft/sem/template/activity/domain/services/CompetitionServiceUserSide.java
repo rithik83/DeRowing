@@ -98,14 +98,15 @@ public class CompetitionServiceUserSide extends ActivityService {
      * @return a boolean value which shows that whether the attendee could be admitted
      */
     private boolean checkGender(Gender gender, GenderConstraint constraint) {
-        if(constraint.value == 3) {
+        int genderConstraint = 3;
+        if (constraint.value == genderConstraint) {
             return true;
         }
         return (constraint.value == gender.value);
     }
 
     /**
-     * Gets suitable conpetitions for the specified position.
+     * Gets suitable competitions for the specified position.
      *
      * @param position The position to filter from
      * @return a list of competitions

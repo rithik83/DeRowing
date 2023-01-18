@@ -103,6 +103,7 @@ public class TrainingServiceUserSide extends ActivityService {
         if (userData == null) {
             throw new Exception("We could not get your user information from the user service");
         }
+
         List<Long> boatIds = trainingRepository.findAll().stream()
                 .filter(competition -> competition.getStartTime()
                         > currentTimeProvider.getCurrentTime().toEpochMilli() + (30 * 60 * 1000))

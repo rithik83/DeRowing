@@ -1,14 +1,9 @@
 package nl.tudelft.sem.template.activity.controllers;
 
-import nl.tudelft.sem.template.activity.authentication.AuthManager;
+import nl.tudelft.sem.template.activity.authentication.AuthInterface;
 import nl.tudelft.sem.template.activity.domain.NetId;
-import nl.tudelft.sem.template.activity.domain.entities.Training;
 import nl.tudelft.sem.template.activity.domain.services.TrainingServiceServerSide;
-import nl.tudelft.sem.template.activity.domain.services.TrainingServiceUserSide;
-import nl.tudelft.sem.template.activity.models.AcceptRequestModel;
 import nl.tudelft.sem.template.activity.models.ActivityCancelModel;
-import nl.tudelft.sem.template.activity.models.JoinRequestModel;
-import nl.tudelft.sem.template.activity.models.PositionEntryModel;
 import nl.tudelft.sem.template.activity.models.TrainingCreateModel;
 import nl.tudelft.sem.template.activity.models.TrainingEditModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
 
 @RequestMapping("/training")
 @RestController
-public class TrainingController {
+public class TrainingControllerServerSide {
 
-    private final transient AuthManager authManager;
-
-    private final transient TrainingServiceUserSide trainingServiceUserSide;
+    private final transient AuthInterface authManager; // changed the AuthManager to an AuthInterface to decrease coupling
 
     private final transient TrainingServiceServerSide trainingServiceServerSide;
 
@@ -35,13 +26,11 @@ public class TrainingController {
      * The controller of trainings.
      *
      * @param authManager      Spring Security component used to authenticate and authorize the user
-     * @param trainingServiceUserSide  the service provider of all activities
+     * @param trainingServiceServerSide  the service provider of all activities
      */
     @Autowired
-    public TrainingController(AuthManager authManager, TrainingServiceUserSide trainingServiceUserSide,
-                              TrainingServiceServerSide trainingServiceServerSide) {
+    public TrainingControllerServerSide(AuthInterface authManager, TrainingServiceServerSide trainingServiceServerSide) {
         this.authManager = authManager;
-        this.trainingServiceUserSide = trainingServiceUserSide;
         this.trainingServiceServerSide = trainingServiceServerSide;
     }
 
@@ -59,38 +48,6 @@ public class TrainingController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.ok("Internal error when creating training.");
-        }
-    }
-
-    /**
-     * A REST-mapping designed to accept / reject users from activities.
-     *
-     * @param model The request body
-     * @return A string informing success
-     */
-    @PostMapping("/inform")
-    public ResponseEntity<String> informUser(@RequestBody AcceptRequestModel model) {
-        try {
-            String status = trainingServiceUserSide.informUser(model);
-            return ResponseEntity.ok(status);
-        } catch (Exception e) {
-            return ResponseEntity.ok("Internal error when informing user.");
-        }
-    }
-
-    /**
-     * A REST-mapping designed to join users to activities.
-     *
-     * @param request the join request
-     * @return status of request
-     */
-    @PostMapping("/join")
-    public ResponseEntity<String> joinTraining(@RequestBody JoinRequestModel request) {
-        try {
-            String response = trainingServiceUserSide.joinTraining(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.ok("Internal error when joining training.");
         }
     }
 
@@ -125,22 +82,5 @@ public class TrainingController {
             return ResponseEntity.ok("Internal error when canceling training.");
         }
 
-    }
-
-    /**
-     * The method to get all trainings.
-     *
-     * @param model the requestBody of the user
-     * @return a list of matching trainings
-     */
-    @PostMapping("/find")
-    public ResponseEntity<List<Training>> getTrainings(@RequestBody PositionEntryModel model) {
-        try {
-            List<Training> result = trainingServiceUserSide.getSuitableCompetition(model.getPosition());
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "There is no competition that you are suitable for", e);
-        }
     }
 }

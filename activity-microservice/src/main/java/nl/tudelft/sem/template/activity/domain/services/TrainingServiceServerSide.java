@@ -81,12 +81,15 @@ public class TrainingServiceServerSide extends ActivityService {
      */
     public String deleteTraining(long trainingId, String netId) throws Exception {
         Training training = trainingRepository.findById(trainingId);
+
         if (training == null) {
             return "training not found";
         }
+
         if (!training.getOwner().toString().equals(netId)) {
             return "You are not the owner of this competition";
         }
+
         long boatId = training.getBoatId();
         BoatDeleteModel boatDeleteModel = new BoatDeleteModel(boatId);
         restServiceFacade.performBoatModel(boatDeleteModel, "/boat/delete", null);
